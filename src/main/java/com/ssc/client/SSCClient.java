@@ -1,6 +1,7 @@
 package com.ssc.client;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ssc.com.ssc.vo.UserInfo;
 import com.ssc.util.DateUtil;
 import com.ssc.util.HttpUtil;
 import com.ssc.util.LotteryUtil;
@@ -19,7 +20,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
+import java.io.*;
 import java.util.Map;
 
 //任三
@@ -130,26 +131,27 @@ public class SSCClient extends Application{
                 _alert.setHeaderText("账号校验通过,开始生成计划");
                 _alert.show();
                 button1.setDisable(true);
+
+                UserInfo userInfo = new UserInfo();
+                userInfo.setUserName(zhTextField.getText());
+                userInfo.setWebsiteName(cb.getValue().toString());
+                userInfo.setAuthCode(sqTextField.getText());
+                this.setUserInfo2File(userInfo);
             }
         });
 
         Scene scene = new Scene(root, 150, 250);
 
         primaryStage.setTitle("腾讯分分前2智能出号,稳定方案加qq:352560380");
-        //Group root = new Group();
-        //Scene scene = new Scene(root, 450, 200, Color.WHITE);
-        /*int x = 100;
-        int y = 100;
-
-        Text text = new Text(x, y, "000 009");
-        TextArea text00Area = new TextArea();
-        text00Area.setText("等待中...");
-
-        //text.setFill(Color.rgb(red, green, blue, .99));
-        root.getChildren().add(text);
-        root.getChildren().add(text00Area);*/
-
         primaryStage.setScene(scene);
+
+        UserInfo userInfo = this.getUserInfoFromFile();
+        if (null != userInfo) {
+            cb.setValue(userInfo.getWebsiteName());
+            zhTextField.setText(userInfo.getUserName());
+            sqTextField.setText(userInfo.getAuthCode());
+        }
+
         primaryStage.show();
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -169,5 +171,26 @@ public class SSCClient extends Application{
         _alert.setContentText(p_message);
         _alert.initOwner(d_stage);
         _alert.show();*/
+    }
+
+    public UserInfo getUserInfoFromFile() {
+        UserInfo userInfo = null;
+        try {
+            FileInputStream fis = new FileInputStream("userinfo");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            userInfo = (UserInfo)ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
+    public void setUserInfo2File(UserInfo userInfo) {
+        try {
+            FileOutputStream fos = new FileOutputStream("userinfo");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(userInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
