@@ -5,10 +5,14 @@ import com.ssc.util.DateUtil;
 import com.ssc.util.HttpUtil;
 import com.ssc.util.LotteryUtil;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -24,7 +28,7 @@ public class SSCClient extends Application{
         launch(args);
     }
 
-    public void trigger(final TextArea textArea, final Stage primaryStage) {
+    public void trigger(final TextField textArea, final Stage primaryStage) {
         Runnable runnable = new Runnable() {
             public void run() {
                 File file = new File("gen.txt");
@@ -68,11 +72,73 @@ public class SSCClient extends Application{
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
+
+        FlowPane root = new FlowPane();
+
+        root.setHgap(10);
+        root.setVgap(20);
+        root.setPadding(new Insets(15,15,15,15));
+
+        Label label1 = new Label();
+        label1.setText("选择平台:");
+        root.getChildren().add(label1);
+
+        ChoiceBox cb = new ChoiceBox(FXCollections.observableArrayList("198", "杏彩", "钱汇"));
+        root.getChildren().add(cb);
+
+
+        Label zhLabel = new Label();
+        zhLabel.setText("账号:");
+        root.getChildren().add(zhLabel);
+
+        // TextField
+        TextField zhTextField = new TextField("");
+        zhTextField.setPrefWidth(120);
+        root.getChildren().add(zhTextField);
+
+        Label sqmLabel = new Label();
+        sqmLabel.setText("授权码:");
+        root.getChildren().add(sqmLabel);
+
+        // TextField
+        TextField sqTextField = new TextField("");
+        sqTextField.setPrefWidth(120);
+        root.getChildren().add(sqTextField);
+
+        // Button 1
+        Button button1= new Button("开始计划");
+        root.getChildren().add(button1);
+
+
+        // TextField
+        TextField textField = new TextField("Text Field");
+        textField.setPrefWidth(110);
+        root.getChildren().add(textField);
+
+        button1.setOnAction(oa -> {
+            String zh = zhTextField.getText();
+            if (!"test".equals(zh)) {
+                Alert _alert = new Alert(Alert.AlertType.WARNING);
+                _alert.setTitle("信息");
+                _alert.setHeaderText("账号失败校验");
+                _alert.show();
+            } else {
+                trigger(textField, primaryStage);
+                Alert _alert = new Alert(Alert.AlertType.INFORMATION);
+                _alert.setTitle("信息");
+                _alert.setHeaderText("账号校验通过,开始生成计划");
+                _alert.show();
+                button1.setDisable(true);
+            }
+        });
+
+        Scene scene = new Scene(root, 150, 250);
+
         primaryStage.setTitle("腾讯分分前2智能出号,稳定方案加qq:352560380");
-        Group root = new Group();
-        Scene scene = new Scene(root, 450, 200, Color.WHITE);
-        int x = 100;
+        //Group root = new Group();
+        //Scene scene = new Scene(root, 450, 200, Color.WHITE);
+        /*int x = 100;
         int y = 100;
 
         Text text = new Text(x, y, "000 009");
@@ -81,7 +147,7 @@ public class SSCClient extends Application{
 
         //text.setFill(Color.rgb(red, green, blue, .99));
         root.getChildren().add(text);
-        root.getChildren().add(text00Area);
+        root.getChildren().add(text00Area);*/
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -92,7 +158,16 @@ public class SSCClient extends Application{
                 System.exit(0);
             }
         });
-        trigger(text00Area, primaryStage);
 
+    }
+
+    //    弹出一个信息对话框
+    public void f_alert_informationDialog(String p_header, String p_message){
+/*        Alert _alert = new Alert(Alert.AlertType.INFORMATION);
+        _alert.setTitle("信息");
+        _alert.setHeaderText(p_header);
+        _alert.setContentText(p_message);
+        _alert.initOwner(d_stage);
+        _alert.show();*/
     }
 }
