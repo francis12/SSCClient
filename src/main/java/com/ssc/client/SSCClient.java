@@ -1,6 +1,7 @@
 package com.ssc.client;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ssc.util.DateUtil;
 import com.ssc.util.HttpUtil;
 import com.ssc.util.LotteryUtil;
 import javafx.application.Application;
@@ -29,10 +30,13 @@ public class SSCClient extends Application{
                 File file = new File("gen.txt");
                 while (true) {
                     try {
+                        String genNo = LotteryUtil.getNextNoByOnlineTime();
                         String url = "http://114.116.9.72:8011/gen/getLatestGenPrize?lotteryCode=TCFFC";
                         String result = HttpUtil.doGet(url, "utf-8");
                         Map<String, Object> map  = JSONObject.parseObject(result, Map.class);
-                        if ("200".equals(String.valueOf(map.get("code")))) {
+
+                        if ("200".equals(String.valueOf(map.get("code")))
+                                && genNo.equals(String.valueOf(map.get("no")))) {
                             String genPrize = (String) map.get("genPrize");
 
                             Integer wan = Integer.valueOf(String.valueOf(genPrize.charAt(0)));
@@ -43,8 +47,17 @@ public class SSCClient extends Application{
                             FileUtils.writeStringToFile(file, output, false);
                             textArea.setText(result+output);
 
+                            //当期期数与取到期数不一致时取下一期
+                            boolean is2FetchNext = false;
+                            while (!is2FetchNext) {
+                                String nextNo = LotteryUtil.getNextNoByOnlineTime();
+                                if (!nextNo.equals(genNo)) {
+                                    FileUtils.writeStringToFile(file, "waiting...", false);
+                                    is2FetchNext = true;
+                                }
+                                Thread.sleep(1*1000);
+                            }
                         }
-                        Thread.sleep(3*1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -52,12 +65,6 @@ public class SSCClient extends Application{
             }
         };
         new Thread(runnable).start();
-         /*
-        ScheduledExecutorService service = Executors
-                .newSingleThreadScheduledExecutor();
-        // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-        service.scheduleAtFixedRate(runnable, 1, 1, TimeUnit.SECONDS);*/
-
     }
 
     @Override

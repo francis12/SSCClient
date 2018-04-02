@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -243,6 +244,45 @@ public class LotteryUtil {
 		return sb.toString();
 	}
 
+	/**
+	 * 时间转化为期数
+	 * @param time
+	 * @return
+	 */
+	public static String genNofromTime(Date time) {
+		String dateQs = new SimpleDateFormat("yyyyMMdd").format(time);
+		String hms = new SimpleDateFormat("HHmmss").format(time);
+		String hh = hms.substring(0, 2);
+		String mm = hms.substring(2, 4);
+		String ss = hms.substring(4, 6);
+
+		int qs = Integer.valueOf(hh) * 60 + Integer.valueOf(mm);
+		String timeQs = "";
+		if (qs < 10) {
+			timeQs = "000" + qs;
+		} else if (qs >= 10 && qs < 100) {
+			timeQs = "00" + qs;
+		} else if (qs >= 100 && qs < 1000) {
+			timeQs = "0" + qs;
+		} else {
+			timeQs = qs + "";
+		}
+		return dateQs + "-" + timeQs;
+	}
+
+	public static String getCurNoByOnlineTime() {
+
+		String time = DateUtil.getWebsiteDatetime("http://www.baidu.com");
+		Date curTime = DateUtil.String2Date(time, "yyyy-MM-dd HH:mm:ss");
+		return LotteryUtil.genNofromTime(curTime);
+	}
+
+	public static String getNextNoByOnlineTime() {
+		String time = DateUtil.getWebsiteDatetime("http://www.baidu.com");
+		Date curTime = DateUtil.String2Date(time, "yyyy-MM-dd HH:mm:ss");
+		Date nextMin = DateUtil.addMinutes(1, curTime);
+		return LotteryUtil.genNofromTime(nextMin);
+	}
 
  	    public static void main(String args[]) throws Exception {
 		System.out.println(LotteryUtil.convertCha2Normal("123", "67"));
