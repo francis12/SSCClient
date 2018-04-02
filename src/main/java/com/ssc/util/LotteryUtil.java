@@ -1,6 +1,7 @@
 package com.ssc.util;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -225,9 +226,25 @@ public class LotteryUtil {
 
 	//a*bc玩法转成通用注数
 	public static String convertCha2Normal(String src1, String src2) {
-		return "";
+
+		if (StringUtils.isEmpty(src1) || StringUtils.isEmpty(src2)) {
+			return "";
+		}
+
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i<src1.length();i++) {
+			String item1 =  String.valueOf(src1.charAt(i));
+			for (int j = 0; j < src2.length(); j++) {
+				String item2 =  String.valueOf(src2.charAt(j));
+				sb.append(item1 + item2 + " ");
+			}
+		}
+
+		return sb.toString();
 	}
 
+
  	    public static void main(String args[]) throws Exception {
+		System.out.println(LotteryUtil.convertCha2Normal("123", "67"));
 	    }
 }

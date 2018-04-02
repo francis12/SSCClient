@@ -38,7 +38,8 @@ public class SSCClient extends Application{
                             Integer wan = Integer.valueOf(String.valueOf(genPrize.charAt(0)));
                             Integer qian = Integer.valueOf(String.valueOf(genPrize.charAt(1)));
 
-                            String output ="预测" + String.valueOf(map.get("no")) + ":" + genPrize + " zhuan(" +  LotteryUtil.genPy3NumStr(wan) + "*" + LotteryUtil.genPy3NumStr(qian)+")zhuan";
+                            String normalNums = LotteryUtil.convertCha2Normal(LotteryUtil.genPy3NumStr(wan), LotteryUtil.genPy3NumStr(qian));
+                            String output ="wanqian" + String.valueOf(map.get("no")) + ":" + genPrize + " zhuan( " +   normalNums +")zhuan";
                             FileUtils.writeStringToFile(file, output, false);
                             textArea.setText(result+output);
 
