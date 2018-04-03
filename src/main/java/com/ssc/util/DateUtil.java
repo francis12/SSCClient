@@ -71,4 +71,13 @@ public class DateUtil {
 		date = cl.getTime();
 		return date;
 	}
+	public static Date addHourss(int amount, Date date) {
+		Calendar cl = Calendar.getInstance();
+
+		cl.setTime(date);
+		cl.add(Calendar.HOUR_OF_DAY, amount);
+
+		date = cl.getTime();
+		return date;
+	}
 }
