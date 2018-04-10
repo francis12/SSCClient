@@ -2,6 +2,7 @@ package com.ssc.client;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ssc.com.ssc.vo.UserInfo;
+import com.ssc.service.PrizeFetchService;
 import com.ssc.util.DateUtil;
 import com.ssc.util.HttpUtil;
 import com.ssc.util.LotteryUtil;
@@ -29,47 +30,8 @@ public class SSCClient extends Application{
         launch(args);
     }
 
-    public void trigger(final TextField textArea, final Stage primaryStage) {
-        Runnable runnable = new Runnable() {
-            public void run() {
-                File file = new File("gen.txt");
-                while (true) {
-                    try {
-                        String genNo = LotteryUtil.getNextNoByOnlineTime();
-                        String url = "http://114.116.9.72:8011/gen/getLatestGenPrize?lotteryCode=TCFFC";
-                        String result = HttpUtil.doGet(url, "utf-8");
-                        Map<String, Object> map  = JSONObject.parseObject(result, Map.class);
-
-                        if ("200".equals(String.valueOf(map.get("code")))
-                                && genNo.equals(String.valueOf(map.get("no")))) {
-                            String genPrize = (String) map.get("genPrize");
-
-                            Integer wan = Integer.valueOf(String.valueOf(genPrize.charAt(0)));
-                            Integer qian = Integer.valueOf(String.valueOf(genPrize.charAt(1)));
-
-                            String normalNums = LotteryUtil.convertCha2Normal(LotteryUtil.genPy3NumStr(wan), LotteryUtil.genPy3NumStr(qian));
-                            String output ="wanqian" + String.valueOf(map.get("no")) + ":" + genPrize + " zhuan( " +   normalNums +")zhuan";
-                            FileUtils.writeStringToFile(file, output, false);
-                            textArea.setText(result+output);
-
-                            //当期期数与取到期数不一致时取下一期
-                            boolean is2FetchNext = false;
-                            while (!is2FetchNext) {
-                                String nextNo = LotteryUtil.getNextNoByOnlineTime();
-                                if (!nextNo.equals(genNo)) {
-                                    FileUtils.writeStringToFile(file, "waiting...", false);
-                                    is2FetchNext = true;
-                                }
-                                Thread.sleep(1*1000);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        new Thread(runnable).start();
+    public void trigger(String start, String end) {
+        new PrizeFetchService().getPrizeDataByTimeInterval(start, end);
     }
 
     @Override
@@ -81,13 +43,19 @@ public class SSCClient extends Application{
         root.setVgap(20);
         root.setPadding(new Insets(15,15,15,15));
 
-        Label label1 = new Label();
+        /*Label label1 = new Label();
         label1.setText("选择平台:");
         root.getChildren().add(label1);
 
         ChoiceBox cb = new ChoiceBox(FXCollections.observableArrayList("198", "杏彩", "钱汇"));
-        root.getChildren().add(cb);
+        root.getChildren().add(cb);*/
 
+        Label label1 = new Label();
+        label1.setText("彩种:");
+        root.getChildren().add(label1);
+
+        ChoiceBox cz = new ChoiceBox(FXCollections.observableArrayList("加拿大30s"));
+        root.getChildren().add(cz);
 
         Label zhLabel = new Label();
         zhLabel.setText("账号:");
@@ -99,7 +67,7 @@ public class SSCClient extends Application{
         root.getChildren().add(zhTextField);
 
         Label sqmLabel = new Label();
-        sqmLabel.setText("授权码:");
+        sqmLabel.setText("开始时间:");
         root.getChildren().add(sqmLabel);
 
         // TextField
@@ -107,10 +75,20 @@ public class SSCClient extends Application{
         sqTextField.setPrefWidth(120);
         root.getChildren().add(sqTextField);
 
-        // Button 1
-        Button button1= new Button("开始计划");
-        root.getChildren().add(button1);
+        Label endLabel = new Label();
+        endLabel.setText("结束时间:");
+        root.getChildren().add(endLabel);
 
+        // TextField
+        TextField endTextField = new TextField("");
+        endTextField.setPrefWidth(120);
+        root.getChildren().add(endTextField);
+
+        sqTextField.setText("2018-4-2 01:00:00");
+        endTextField.setText("2018-4-2 01:00:00");
+        // Button 1
+        Button button1= new Button("开始下载数据");
+        root.getChildren().add(button1);
 
         // TextField
         TextField textField = new TextField("Text Field");
@@ -119,35 +97,36 @@ public class SSCClient extends Application{
 
         button1.setOnAction(oa -> {
             String zh = zhTextField.getText();
-            if (!"test".equals(zh)) {
+            if (!"qq352560380".equals(zh)) {
                 Alert _alert = new Alert(Alert.AlertType.WARNING);
                 _alert.setTitle("信息");
                 _alert.setHeaderText("账号失败校验");
                 _alert.show();
             } else {
-                trigger(textField, primaryStage);
+                String start = sqTextField.getText();
+                String end = endTextField.getText();
+                trigger(start, end);
                 Alert _alert = new Alert(Alert.AlertType.INFORMATION);
                 _alert.setTitle("信息");
-                _alert.setHeaderText("账号校验通过,开始生成计划");
+                _alert.setHeaderText("账号校验通过,开始下载数据到当前文件夹下!");
                 _alert.show();
-                button1.setDisable(true);
 
                 UserInfo userInfo = new UserInfo();
                 userInfo.setUserName(zhTextField.getText());
-                userInfo.setWebsiteName(cb.getValue().toString());
+                //userInfo.setWebsiteName(cb.getValue().toString());
                 userInfo.setAuthCode(sqTextField.getText());
                 this.setUserInfo2File(userInfo);
             }
         });
 
-        Scene scene = new Scene(root, 150, 250);
+        Scene scene = new Scene(root, 180, 320);
 
-        primaryStage.setTitle("腾讯分分前2智能出号,稳定方案加qq:352560380");
+        primaryStage.setTitle("腾讯分分智能出号,稳定方案加qq:352560380");
         primaryStage.setScene(scene);
 
         UserInfo userInfo = this.getUserInfoFromFile();
         if (null != userInfo) {
-            cb.setValue(userInfo.getWebsiteName());
+            //cb.setValue(userInfo.getWebsiteName());
             zhTextField.setText(userInfo.getUserName());
             sqTextField.setText(userInfo.getAuthCode());
         }

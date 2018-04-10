@@ -14,11 +14,13 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DateUtil {
+	public static final String DEFAULT_FORMAT_STR          = "yyyy-MM-dd";
 
 	public static void main(String[] args) {
 		String date = DateUtil.getWebsiteDatetime("http://www.baidu.com");
@@ -34,6 +36,18 @@ public class DateUtil {
 			e.printStackTrace();
 		}
 		return  result;
+	}
+
+	public static String date2String(Date date, String formatStr) {
+		if (null == date)
+			return "";
+		if (formatStr == null)
+			formatStr = DEFAULT_FORMAT_STR;
+		DateFormat df = createFormatter(formatStr);
+		return df.format(date);
+	}
+	public static DateFormat createFormatter(String pattern) {
+		return new SimpleDateFormat(pattern);
 	}
 	/**
 	 * 获取指定网站的日期时间
