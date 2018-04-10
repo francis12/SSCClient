@@ -5,7 +5,6 @@ import com.ssc.com.ssc.vo.PrizeVo;
 import com.ssc.util.DateUtil;
 import com.ssc.util.ExcelUtil;
 import com.ssc.util.HttpUtil;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -21,10 +20,8 @@ public class PrizeFetchService {
         List<PrizeVo> prizeVoList = new ArrayList<>();
 
         try {
-        String url = can30sUrl + time;
-        String encodeURL = URLEncoder.encode(url, "UTF-8");
-
-        String result = HttpUtil.doGet(encodeURL,"utf-8");
+            String url = can30sUrl + time.replace(" ", "%20");
+            String result = HttpUtil.doGet(url,"utf-8");
 
             //String result = FileUtils.readFileToString(new File("d://testFile.txt"));
             Map<String, Object> jsonResult = JSONObject.parseObject(result, Map.class);
@@ -47,6 +44,7 @@ public class PrizeFetchService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
         Collections.sort(prizeVoList, new Comparator<PrizeVo>() {
             @Override
@@ -78,6 +76,6 @@ public class PrizeFetchService {
             allResult.addAll(prizeVoList);
             startDate = DateUtil.addHourss(1, startDate);
         }
-        ExcelUtil.writeCanada30SExcel(allResult, "加拿大30s开奖数据.xls");
+        ExcelUtil.writeCanada30SExcel(allResult, "加拿大30s开奖数据" + DateUtil.date2String(new Date(),"yyyyMMddHHmmss") + ".xls");
     }
 }
