@@ -151,16 +151,16 @@ public class LotteryUtil {
 	public static  String genPy3NumStr(int num) {
 		String result = "";
 		switch (num) {
-			case 0: return "7890123";
-			case 1: return "8901234";
-			case 2: return "9012345";
+			case 0: return "0123789";
+			case 1: return "0123489";
+			case 2: return "0123459";
 			case 3: return "0123456";
 			case 4: return "1234567";
 			case 5: return "2345678";
 			case 6: return "3456789";
-			case 7: return "4567890";
-			case 8: return "5678901";
-			case 9: return "6789012";
+			case 7: return "0456789";
+			case 8: return "0156789";
+			case 9: return "0126789";
 		}
 		return  result;
 	}
@@ -225,9 +225,8 @@ public class LotteryUtil {
 		return  false;
 	}
 
-	//a*bc玩法转成通用注数
+	//二星a*b玩法转成通用注数
 	public static String convertCha2Normal(String src1, String src2) {
-
 		if (StringUtils.isEmpty(src1) || StringUtils.isEmpty(src2)) {
 			return "";
 		}
@@ -243,6 +242,30 @@ public class LotteryUtil {
 
 		return sb.toString();
 	}
+	//三星a*b玩法转成通用注数
+	public static String convertCha3Normal(String src1, String src2, String src3) {
+		if (StringUtils.isEmpty(src1) || StringUtils.isEmpty(src2)) {
+			return "";
+		}
+
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i<src1.length();i++) {
+			String item1 =  String.valueOf(src1.charAt(i));
+			for (int j = 0; j < src2.length(); j++) {
+				String item2 =  String.valueOf(src2.charAt(j));
+				for (int k = 0; k < src3.length(); k++) {
+					String item3 =  String.valueOf(src3.charAt(k));
+					if(i == (src1.length()-1) && j == (src2.length()-1)  && k == (src3.length()-1)) {
+						sb.append(item1 + item2 + item3);
+					} else {
+						sb.append(item1 + item2 + item3 + " ");
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 
 	/**
 	 * 时间转化为期数
@@ -269,7 +292,159 @@ public class LotteryUtil {
 		}
 		return dateQs + "-" + timeQs;
 	}
+	//返回前3后4个数字包括自己共8个数字
+	public static  String genPyPost4NumStr(int num) {
+		String result = "";
+		switch (num) {
+			case 0: return "78901234";
+			case 1: return "89012345";
+			case 2: return "90123456";
+			case 3: return "01234567";
+			case 4: return "12345678";
+			case 5: return "23456789";
+			case 6: return "34567890";
+			case 7: return "45678901";
+			case 8: return "56789012";
+			case 9: return "67890123";
+		}
+		return  result;
+	}
+	//与genPyPost4NumStr对应
+	public static boolean judgeIsmatchBetweenPost4(int src, int dst) {
+		String dstStr = dst + "";
+		switch (src) {
+			case 0 :
+				if ("78901234".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
 
+			case 1 :
+				if ("89012345".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 2 :
+				if ("90123456".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 3 :
+				if ("01234567".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 4 :
+				if ("12345678".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 5 :
+				if ("23456789".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 6 :
+				if ("34567890".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 7 :
+				if ("45678901".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 8 :
+				if ("56789012".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 9 :
+				if ("67890123".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			default: break;
+		}
+		return  false;
+	}
+
+	//返回前3后4个数字包括自己共8个数字
+	public static  String genPy4NumStr(int num) {
+		String result = "";
+		switch (num) {
+			case 0: return "678901234";
+			case 1: return "789012345";
+			case 2: return "890123456";
+			case 3: return "901234567";
+			case 4: return "012345678";
+			case 5: return "123456789";
+			case 6: return "234567890";
+			case 7: return "345678901";
+			case 8: return "456789012";
+			case 9: return "567890123";
+		}
+		return  result;
+	}
+	//与genPy4NumStr对应
+	public static boolean judgeIsmatchBetween4(int src, int dst) {
+		String dstStr = dst + "";
+		switch (src) {
+			case 0 :
+				if ("678901234".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+
+			case 1 :
+				if ("789012345".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 2 :
+				if ("890123456".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 3 :
+				if ("901234567".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 4 :
+				if ("012345678".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 5 :
+				if ("123456789".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 6 :
+				if ("234567890".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 7 :
+				if ("345678901".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 8 :
+				if ("456789012".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			case 9 :
+				if ("567890123".indexOf(dstStr) >= 0) {
+					return  true;
+				}
+				break;
+			default: break;
+		}
+		return  false;
+	}
 	public static String getCurNoByOnlineTime() {
 
 		String time = DateUtil.getWebsiteDatetime("http://www.baidu.com");
@@ -285,6 +460,6 @@ public class LotteryUtil {
 	}
 
  	    public static void main(String args[]) throws Exception {
-		System.out.println(LotteryUtil.convertCha2Normal("123", "67"));
+		System.out.println(LotteryUtil.convertCha3Normal("123", "67", "269"));
 	    }
 }

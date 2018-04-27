@@ -2,29 +2,32 @@ package com.ssc.client;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ssc.com.ssc.vo.UserInfo;
-import com.ssc.util.DateUtil;
+import com.ssc.service.SSCService;
 import com.ssc.util.HttpUtil;
 import com.ssc.util.LotteryUtil;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.util.Date;
 import java.util.Map;
+import java.util.logging.Logger;
+
 
 //任三
 public class SSCClient extends Application{
+
+    File file = new File("定位胆-千位.txt");
+    File zhong3File = new File("中3.txt");
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -32,41 +35,7 @@ public class SSCClient extends Application{
     public void trigger(final TextField textArea, final Stage primaryStage) {
         Runnable runnable = new Runnable() {
             public void run() {
-                File file = new File("gen.txt");
-                while (true) {
-                    try {
-                        String genNo = LotteryUtil.getNextNoByOnlineTime();
-                        String url = "http://114.116.9.72:8011/gen/getLatestGenPrize?lotteryCode=TCFFC";
-                        String result = HttpUtil.doGet(url, "utf-8");
-                        Map<String, Object> map  = JSONObject.parseObject(result, Map.class);
-
-                        if ("200".equals(String.valueOf(map.get("code")))
-                                && genNo.equals(String.valueOf(map.get("no")))) {
-                            String genPrize = (String) map.get("genPrize");
-
-                            Integer wan = Integer.valueOf(String.valueOf(genPrize.charAt(0)));
-                            Integer qian = Integer.valueOf(String.valueOf(genPrize.charAt(1)));
-
-                            String normalNums = LotteryUtil.convertCha2Normal(LotteryUtil.genPy3NumStr(wan), LotteryUtil.genPy3NumStr(qian));
-                            String output ="wanqian" + String.valueOf(map.get("no")) + ":" + genPrize + " zhuan( " +   normalNums +")zhuan";
-                            FileUtils.writeStringToFile(file, output, false);
-                            textArea.setText(result+output);
-
-                            //当期期数与取到期数不一致时取下一期
-                            boolean is2FetchNext = false;
-                            while (!is2FetchNext) {
-                                String nextNo = LotteryUtil.getNextNoByOnlineTime();
-                                if (!nextNo.equals(genNo)) {
-                                    FileUtils.writeStringToFile(file, "waiting...", false);
-                                    is2FetchNext = true;
-                                }
-                                Thread.sleep(1*1000);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                new SSCService().processGenNumEnvent();
             }
         };
         new Thread(runnable).start();

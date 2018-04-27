@@ -9,7 +9,7 @@
         <module name="SSCClient" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="SSCClient" target="1.8" />
     </bytecodeTargetLevel>
   </component>
