@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -248,6 +249,7 @@ public class LotteryUtil {
 			return "";
 		}
 
+		List<String> result = new ArrayList<>();
 		StringBuffer sb = new StringBuffer();
 		for(int i=0; i<src1.length();i++) {
 			String item1 =  String.valueOf(src1.charAt(i));
@@ -255,14 +257,17 @@ public class LotteryUtil {
 				String item2 =  String.valueOf(src2.charAt(j));
 				for (int k = 0; k < src3.length(); k++) {
 					String item3 =  String.valueOf(src3.charAt(k));
-					if(i == (src1.length()-1) && j == (src2.length()-1)  && k == (src3.length()-1)) {
-						sb.append(item1 + item2 + item3);
-					} else {
-						sb.append(item1 + item2 + item3 + " ");
-					}
+					result.add(item1 + item2 + item3);
+
 				}
 			}
 		}
+		Collections.sort(result);
+		result.stream().forEach(
+				item -> {
+					sb.append(item + " ");
+				}
+		);
 		return sb.toString();
 	}
 
