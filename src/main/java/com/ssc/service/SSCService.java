@@ -26,6 +26,8 @@ public class SSCService {
 
     File file = new File("定位胆-千位.txt");
     File zhong3File = new File("中3.txt");
+    File wanDwdFile = new File("wan.txt");
+
 
     private boolean processLatestNo() throws Exception {
         String genNo = LotteryUtil.getNextNoByOnlineTime();
@@ -36,7 +38,7 @@ public class SSCService {
         int retryCnt = 0;
         while (retryCnt <= 60 && isGetCur == false) {
             retryCnt++;
-            String url = "http://117.78.26.122:8011/gen/getLatestGenPrize?lotteryCode=TCFFC&signCode=201613gn7ew";
+            String url = "http://49.4.1.29:8011/gen/getLatestGenPrize?lotteryCode=TCFFC&signCode=201613gn7ew&type=0011&no=" + genNo;
             //String url = "http://localhost:8011/gen/getLatestGenPrize?lotteryCode=TCFFC&signCode=201613gn7ew";
             String result = HttpUtil.doGet(url, "utf-8");
             Map<String, Object> map = JSONObject.parseObject(result, Map.class);
@@ -47,23 +49,26 @@ public class SSCService {
                     && genNo.equals(no)) {
                 String genPrize = (String) map.get("genPrize");
                 System.out.println(genPrize);
-                Integer wan = Integer.valueOf(String.valueOf(genPrize.charAt(0)));
-                Integer qian = Integer.valueOf(String.valueOf(genPrize.charAt(1)));
-                Integer bai = Integer.valueOf(String.valueOf(genPrize.charAt(2)));
-                Integer shi = Integer.valueOf(String.valueOf(genPrize.charAt(3)));
-                Integer ge = Integer.valueOf(String.valueOf(genPrize.charAt(4)));
+                FileUtils.writeStringToFile(wanDwdFile, genPrize, false);
+//                Integer wan = Integer.valueOf(String.valueOf(genPrize.charAt(0)));
+//                Integer qian = Integer.valueOf(String.valueOf(genPrize.charAt(1)));
+//                Integer bai = Integer.valueOf(String.valueOf(genPrize.charAt(2)));
+//                Integer shi = Integer.valueOf(String.valueOf(genPrize.charAt(3)));
+//                Integer ge = Integer.valueOf(String.valueOf(genPrize.charAt(4)));
 
-                //定位胆
-                String qianGenStr = LotteryUtil.genPy3NumStr(qian);
+//                //定位胆
+//                String qianGenStr = LotteryUtil.genPy3NumStr(qian);
+//
+//                String output = "第" + String.valueOf(map.get("no")) + "期:" + " zhuan(" + qianGenStr + ")zhuan";
+//                FileUtils.writeStringToFile(file, output, false);
+//
+//                //中三
+//                //String srcStr = LotteryUtil.genPyPost4NumStr(qian) + "*" + LotteryUtil.genPy4NumStr(bai) + "*" + LotteryUtil.genPy4NumStr(shi);
+//                String zhong3NormalNums = LotteryUtil.convertCha3Normal(LotteryUtil.genPyPost4NumStr(qian), LotteryUtil.genPy4NumStr(bai), LotteryUtil.genPy4NumStr(shi));
+//                String zhong3Output = "第" + String.valueOf(map.get("no")) + "期:" + " zhuan(" + zhong3NormalNums + ")zhuan";
+//                FileUtils.writeStringToFile(zhong3File, zhong3Output, false);
 
-                String output = "第" + String.valueOf(map.get("no")) + "期:" + " zhuan(" + qianGenStr + ")zhuan";
-                FileUtils.writeStringToFile(file, output, false);
 
-                //中三
-                //String srcStr = LotteryUtil.genPyPost4NumStr(qian) + "*" + LotteryUtil.genPy4NumStr(bai) + "*" + LotteryUtil.genPy4NumStr(shi);
-                String zhong3NormalNums = LotteryUtil.convertCha3Normal(LotteryUtil.genPyPost4NumStr(qian), LotteryUtil.genPy4NumStr(bai), LotteryUtil.genPy4NumStr(shi));
-                String zhong3Output = "第" + String.valueOf(map.get("no")) + "期:" + " zhuan(" + zhong3NormalNums + ")zhuan";
-                FileUtils.writeStringToFile(zhong3File, zhong3Output, false);
                 isGetCur = true;
             }
 

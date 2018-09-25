@@ -111,7 +111,7 @@ public class SSCClient extends Application{
 
         Scene scene = new Scene(root, 150, 250);
 
-        primaryStage.setTitle("腾讯分分前2智能出号,稳定方案加qq:352560380");
+        primaryStage.setTitle("腾讯分分智能出号系统");
         primaryStage.setScene(scene);
 
         UserInfo userInfo = this.getUserInfoFromFile();
