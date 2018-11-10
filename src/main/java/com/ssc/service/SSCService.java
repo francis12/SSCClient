@@ -24,10 +24,14 @@ import java.util.Map;
 //任三
 public class SSCService {
 
-    File file = new File("定位胆-千位.txt");
-    File zhong3File = new File("中3.txt");
+    //File file = new File("定位胆-千位.txt");
+    //File zhong3File = new File("中3.txt");
     File wanDwdFile = new File("wan.txt");
 
+    String type;
+    public SSCService(String type) {
+        this.type = type;
+    }
 
     private boolean processLatestNo() throws Exception {
         String genNo = LotteryUtil.getNextNoByOnlineTime();
@@ -38,7 +42,7 @@ public class SSCService {
         int retryCnt = 0;
         while (retryCnt <= 60 && isGetCur == false) {
             retryCnt++;
-            String url = "http://49.4.1.29:8011/gen/getLatestGenPrize?lotteryCode=TCFFC&signCode=201613gn7ew&type=0011&no=" + genNo;
+            String url = "http://114.115.161.72:8011/gen/getLatestGenPrize?lotteryCode=TCFFC&signCode=201613gn7ew&type="+ type+ "&no=" + genNo;
             //String url = "http://localhost:8011/gen/getLatestGenPrize?lotteryCode=TCFFC&signCode=201613gn7ew";
             String result = HttpUtil.doGet(url, "utf-8");
             Map<String, Object> map = JSONObject.parseObject(result, Map.class);
@@ -49,7 +53,9 @@ public class SSCService {
                     && genNo.equals(no)) {
                 String genPrize = (String) map.get("genPrize");
                 System.out.println(genPrize);
-                FileUtils.writeStringToFile(wanDwdFile, genPrize, false);
+                String output = type + " - " + String.valueOf(map.get("no")) + ":" + " zhuan(" + genPrize + ")zhuan";
+                String target = new String(output.getBytes("utf-8"), "utf-8");
+                FileUtils.writeStringToFile(wanDwdFile, target, false);
 //                Integer wan = Integer.valueOf(String.valueOf(genPrize.charAt(0)));
 //                Integer qian = Integer.valueOf(String.valueOf(genPrize.charAt(1)));
 //                Integer bai = Integer.valueOf(String.valueOf(genPrize.charAt(2)));
@@ -80,15 +86,15 @@ public class SSCService {
             while (!is2FetchNext) {
                 String nextNo = LotteryUtil.getNextNoByOnlineTime();
                 if (!nextNo.equals(genNo)) {
-                    FileUtils.writeStringToFile(file, "waiting...", false);
-                    FileUtils.writeStringToFile(zhong3File, "waiting...", false);
+                    FileUtils.writeStringToFile(wanDwdFile, "waiting...", false);
+                    //FileUtils.writeStringToFile(zhong3File, "waiting...", false);
                     is2FetchNext = true;
                 }
                 Thread.sleep(1 * 1000);
             }
         } else {
-            FileUtils.writeStringToFile(file, "cur" + genNo + "  plan error", false);
-            FileUtils.writeStringToFile(zhong3File, "cur" + genNo + " plan error", false);
+            FileUtils.writeStringToFile(wanDwdFile, "cur" + genNo + "  plan error", false);
+            //FileUtils.writeStringToFile(zhong3File, "cur" + genNo + " plan error", false);
             return false;
         }
         return true;

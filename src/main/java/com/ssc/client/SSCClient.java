@@ -1,25 +1,20 @@
 package com.ssc.client;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ssc.com.ssc.vo.UserInfo;
 import com.ssc.service.SSCService;
-import com.ssc.util.HttpUtil;
-import com.ssc.util.LotteryUtil;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.util.Date;
-import java.util.Map;
-import java.util.logging.Logger;
 
 
 //任三
@@ -32,10 +27,10 @@ public class SSCClient extends Application{
         launch(args);
     }
 
-    public void trigger(final TextField textArea, final Stage primaryStage) {
+    public void trigger(final TextField textArea, final Stage primaryStage, String type) {
         Runnable runnable = new Runnable() {
             public void run() {
-                new SSCService().processGenNumEnvent();
+                new SSCService(type).processGenNumEnvent();
             }
         };
         new Thread(runnable).start();
@@ -50,13 +45,21 @@ public class SSCClient extends Application{
         root.setVgap(20);
         root.setPadding(new Insets(15,15,15,15));
 
-        Label label1 = new Label();
-        label1.setText("选择平台:");
+       /* Label label1 = new Label();
+        label1.setText("选择计划:");
         root.getChildren().add(label1);
 
-        ChoiceBox cb = new ChoiceBox(FXCollections.observableArrayList("198", "杏彩", "钱汇"));
-        root.getChildren().add(cb);
+        ChoiceBox cb = new ChoiceBox(FXCollections.observableArrayList("万位大小", "万位单双"));
+        root.getChildren().add(cb);*/
 
+        Label jhLabel = new Label();
+        jhLabel.setText("计划id:");
+        root.getChildren().add(jhLabel);
+
+        // TextField
+        TextField jhTextField = new TextField("");
+        jhTextField.setPrefWidth(120);
+        root.getChildren().add(jhTextField);
 
         Label zhLabel = new Label();
         zhLabel.setText("账号:");
@@ -81,20 +84,22 @@ public class SSCClient extends Application{
         root.getChildren().add(button1);
 
 
-        // TextField
+       /// TextField
         TextField textField = new TextField("Text Field");
         textField.setPrefWidth(110);
+        textField.setDisable(true);
         root.getChildren().add(textField);
 
         button1.setOnAction(oa -> {
             String zh = zhTextField.getText();
+            String type = jhTextField.getText();
             if (!"test".equals(zh)) {
                 Alert _alert = new Alert(Alert.AlertType.WARNING);
                 _alert.setTitle("信息");
                 _alert.setHeaderText("账号失败校验");
                 _alert.show();
             } else {
-                trigger(textField, primaryStage);
+                trigger(textField, primaryStage, type);
                 Alert _alert = new Alert(Alert.AlertType.INFORMATION);
                 _alert.setTitle("信息");
                 _alert.setHeaderText("账号校验通过,开始生成计划");
@@ -103,20 +108,20 @@ public class SSCClient extends Application{
 
                 UserInfo userInfo = new UserInfo();
                 userInfo.setUserName(zhTextField.getText());
-                userInfo.setWebsiteName(cb.getValue().toString());
+                //userInfo.setWebsiteName(cb.getValue().toString());
                 userInfo.setAuthCode(sqTextField.getText());
                 this.setUserInfo2File(userInfo);
             }
         });
 
-        Scene scene = new Scene(root, 150, 250);
+        Scene scene = new Scene(root, 600, 100);
 
-        primaryStage.setTitle("腾讯分分智能出号系统");
+        primaryStage.setTitle("腾讯分分智能出号系统,联系qq:");
         primaryStage.setScene(scene);
 
         UserInfo userInfo = this.getUserInfoFromFile();
         if (null != userInfo) {
-            cb.setValue(userInfo.getWebsiteName());
+            //cb.setValue(userInfo.getWebsiteName());
             zhTextField.setText(userInfo.getUserName());
             sqTextField.setText(userInfo.getAuthCode());
         }
